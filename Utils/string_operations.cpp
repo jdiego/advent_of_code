@@ -1,6 +1,20 @@
-#include <vector>
 #include <string>
+#include <vector>
+#include <iterator>
+#include <iostream>
+#include <algorithm>
 
-std::vector<std::string> split_string(std::string str, std::string delimiter){
-    
+struct Line
+{
+    std::string buffer;
+
+    operator std::string() const
+    {
+        return buffer;
+    }
+};
+std::istream& operator>>(std::istream& str, Line& data)
+{
+    std::getline(str, data.buffer);
+    return str;
 }

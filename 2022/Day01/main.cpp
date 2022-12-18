@@ -10,6 +10,17 @@
 #include <iomanip>
 #include <fstream>
 
+struct Line : public std::string {
+    using std::string::string;
+};
+
+std::istream& operator>>(std::istream& stream, Line& line)
+{
+    std::getline(stream, line);
+    return stream;
+}
+
+
 auto max_calories(const std::vector<std::string>& data, std::string delimiter){
     auto by_elf = data | 
         // 1. split the input by-elf
@@ -33,8 +44,8 @@ auto top_one(const std::vector<std::string>& data, std::string delimiter = std::
 
 auto top_three(const std::vector<std::string>& data, std::string delimiter = std::string{}) {
     auto by_elf = max_calories(data, delimiter);
-    // sort the elfs by calories
     std::vector<uint64_t> top_elfs(3);
+    // sort the elfs by calories
     std::ranges::partial_sort_copy(by_elf, top_elfs, std::greater<>{});
     // pick the top three elf with the most calories
     return std::accumulate(top_elfs.begin(), top_elfs.end(), 0);
@@ -42,35 +53,27 @@ auto top_three(const std::vector<std::string>& data, std::string delimiter = std
 }
 
 int parse_and_run(std::string_view path) {
-    std::vector<std::string> data;
     std::fstream file(path.data());
     if (!file.is_open()) {
         std::cerr << "Failed to open " << std::quoted(path) << "\n";
         return 1;
     }
-    std::string line;
-    while (std::getline(file, line)) {
-        data.push_back(line);
-    }
-    std::cout << "The elf with the maximum number of calorie is carrying " 
-            << top_one(data) 
-            << " calories worth of food.\n";
-    std::cout << "The top 3 elfs are carrying " 
-            << top_three(data) 
-            << " calories worth of food.\n";
-
+    std::vector<std::string> data(std::istream_iterator<Line>{file}, std::istream_iterator<Line>{});
+    std::cout << "The elf with the maximum number of calorie is carrying " << top_one(data) << " calories worth of food.\n";
+    std::cout << "The top 3 elfs are carrying " << top_three(data) << " calories worth of food.\n";
     return 0;
 }
 
 int test_sample_input() {
     std::vector<std::string> test_input{
-        "1000", "2000", "3000", " ",
-        "4000", " ",
-        "5000", "6000", " ",
-        "7000", "8000", "9000", " ",
+        "1000", "2000", "3000", "",
+        "4000", "",
+        "5000", "6000", "",
+        "7000", "8000", "9000", "",
         "10000"
     };
-    assert(top_one(test_input) == 24000);
+    auto top_elf = top_one(test_input);
+    assert(top_elf == 24000);
     return 0;
 }
 
