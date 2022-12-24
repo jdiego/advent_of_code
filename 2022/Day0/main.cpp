@@ -5,6 +5,7 @@
 #include <string_view>
 #include <ranges>
 #include <iostream>
+#include <iomanip>
 #include <fstream>
 
 
@@ -13,7 +14,12 @@ int test_sample_input(){
 }
 
 int parse_and_run(const std::string path){
-
+    std::fstream file(path);
+    if (!file.is_open()) {
+        std::cerr << "Failed to open " << std::quoted(path) << "\n";
+        return 1;
+    }
+    return 0;
 }
 
 
