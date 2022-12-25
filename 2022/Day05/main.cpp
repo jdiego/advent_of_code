@@ -174,10 +174,15 @@ int parse_and_run(const std::string path){
         return 1;
     }
     auto crates = load_crates(file);
+    auto crates_copy = crates;
     Moves moves;
     std::ranges::copy(std::views::istream<Move>(file), std::back_inserter(moves));
+    
     operate_crane_mover_9000(crates, moves);
-    std::cout << "After processing orders, the top crates are " << top_crates(crates) << '\n';
+    std::cout << "After processing orders using CrateMover9000, the top crates are " << top_crates(crates) << '\n';
+    
+    operate_crane_mover_9001(crates_copy, moves);
+    std::cout << "After processing orders using CrateMover9001, the top crates are " << top_crates(crates_copy) << '\n';
     return 0;
 }
 
